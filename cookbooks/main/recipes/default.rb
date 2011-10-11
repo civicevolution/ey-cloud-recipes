@@ -4,6 +4,9 @@
 #  }
 #end
 
+require_recipe 'fix_nginx_server_names'
+require_recipe 'daemons'
+
 # uncomment to turn on thinking sphinx/ultra sphinx. Remember to edit cookbooks/sphinx/recipes/default.rb first!
 # require_recipe "sphinx"
 
