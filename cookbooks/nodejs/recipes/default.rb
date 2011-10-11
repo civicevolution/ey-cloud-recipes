@@ -48,6 +48,10 @@ if ['solo','app_master'].include?(node[:instance_role])
   end
   execute "install nodejs" do
     command "cd /data/nodejs/#{nodejs_dir} && make install"
+    # move old version and create a sym link
+    command "mv /opt/node /opt/node_ey"
+    command "ln -sfv /usr/local /opt/node"
+    
     not_if { FileTest.exists?("/usr/local/bin/node") }
   end
 
