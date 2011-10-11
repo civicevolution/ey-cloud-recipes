@@ -3,7 +3,7 @@
 # Recipe:: default
 #
 
-if ['solo'].include?(node[:instance_role])
+if ['solo','app_master'].include?(node[:instance_role])
 
   nodejs_file = "node-v0.4.12.tar.gz"
   nodejs_dir = "node-v0.4.12"
