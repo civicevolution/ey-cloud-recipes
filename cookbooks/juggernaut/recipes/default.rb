@@ -13,10 +13,13 @@
 # chef_config['db_host']
 # => "ec2-50-18-101-127.us-west-1.compute.amazonaws.com"
 
-pidfile = '/var/run/juggernaut.pid'
+pid_file = '/var/run/juggernaut.pid'
 chef_file = '/etc/chef/dna.json'
 chef_config = JSON.parse(File.read(chef_file))
 redis_host = chef_config['db_host']
+redis_port = 6379
+redis_user = 'brian'
+redis_pwd = 'pwd'
 #redis_host = 'http://brian:123@ec2-50-18-101-127.us-west-1.compute.amazonaws.com:6379'
 
 if ['app','app_master','solo'].include?(node[:instance_role])
@@ -39,15 +42,18 @@ if ['app','app_master','solo'].include?(node[:instance_role])
 # install init.d
   case node[:instance_role]
     when "solo", "app_master"
-      template "/etc/init.d/jugggernaut-TEST" do
+      template "/etc/init.d/juggernaut-TEST" do
         source "juggernaut.init.d.erb"
         owner "root"
         group "root"
         mode 0644
         variables({
-          :pid_file => pidfile,
-          :redis_host => redis_host
-        })
+          :pid_file => pid_file,
+          :redis_host => redis_host,
+          :redis_port => redis_port,
+          :redis_user => redis_user,
+          :redis_pwd => redis_pwd
+        })  
       end
   end
 
@@ -56,7 +62,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   # add to monit
   case node[:instance_role]
     when "solo", "app_master"
-      template "/etc/monit.d/jugggernaut-TEST.monitrc" do
+      template "/etc/monit.d/juggernaut-TEST.monitrc" do
         source "juggernaut.monitrc.erb"
         owner "root"
         group "root"
