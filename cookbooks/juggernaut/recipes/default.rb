@@ -42,7 +42,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
 # install init.d
   case node[:instance_role]
     when "solo", "app_master"
-      template "/etc/init.d/juggernaut-TEST" do
+      template "/etc/init.d/juggernaut" do
         source "juggernaut.init.d.erb"
         owner "root"
         group "root"
@@ -62,7 +62,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   # add to monit
   case node[:instance_role]
     when "solo", "app_master"
-      template "/etc/monit.d/juggernaut-TEST.monitrc" do
+      template "/etc/monit.d/juggernaut.monitrc" do
         source "juggernaut.monitrc.erb"
         owner "root"
         group "root"
