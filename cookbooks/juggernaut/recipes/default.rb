@@ -8,6 +8,8 @@
 
 pidfile = '/var/run/juggernaut.pid'
 # I want to get the address of the DB MASTER from /etc/chef/dna.json
+# chef_file = '/etc/chef/dna.json'
+# chef_config = JSON.parse(File.read(chef_file))
 redis_host = 'http://brian:123@ec2-50-18-101-127.us-west-1.compute.amazonaws.com:6379'
 
 if ['app','app_master','solo'].include?(node[:instance_role])
@@ -36,7 +38,8 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         group "root"
         mode 0644
         variables({
-          :pid_file => pidfile
+          :pid_file => pidfile, 
+          :redis_host => redis_host
         })
       end
   end
