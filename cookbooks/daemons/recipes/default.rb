@@ -43,9 +43,9 @@ case node[:instance_role]
     end
 end
 
-case node[:instance_role]
-  when "solo", "app_master"
-    execute "monit reload" do
-      action :run
-    end
-end
+#case node[:instance_role]
+#  when "solo", "app_master"
+#    execute "monit reload" do
+#      action :run
+#    end
+#end
