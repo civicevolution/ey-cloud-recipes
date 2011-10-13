@@ -68,7 +68,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         group "root"
         mode 0644
         variables({
-          :pid_file => pidfile
+          :pid_file => pid_file
         })
       end
   end
