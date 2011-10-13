@@ -43,6 +43,7 @@ case node[:instance_role]
     end
 end
 
+# monit will get restarted in juggernaut
 #case node[:instance_role]
 #  when "solo", "app_master"
 #    execute "monit reload" do

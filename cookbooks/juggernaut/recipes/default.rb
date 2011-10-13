@@ -73,13 +73,14 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       end
   end
   
- # # reload monit
- # case node[:instance_role]
- #   when "solo", "app_master"
- #     execute "monit reload" do
- #       action :run
- #     end
- # end
+  # this restart also affects daemons (monitrc for notify and delayed_job)
+  # reload monit
+  case node[:instance_role]
+    when "solo", "app_master"
+      execute "monit reload" do
+        action :run
+      end
+  end
 
 
 
