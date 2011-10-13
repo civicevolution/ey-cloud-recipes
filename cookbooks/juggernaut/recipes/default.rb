@@ -46,7 +46,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         source "juggernaut.init.d.erb"
         owner "root"
         group "root"
-        mode 0644
+        mode 0666
         variables({
           :pid_file => pid_file,
           :redis_host => redis_host,
