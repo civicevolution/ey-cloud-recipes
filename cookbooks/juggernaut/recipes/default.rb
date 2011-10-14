@@ -107,11 +107,12 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         # first create the fragement I will need
         # then read it into a variable to insert into the actual haproxy.cfg
         Chef::Log.info "process haproxy.cfg with template #{filepath_haproxy_frag}"
+        Chef::Log.info "master_app_server_host: #{master_app_server_host}, node_js_port: #{node_js_port} "
         template filepath_haproxy_frag do
           source "haproxy.cfg.frag.erb"
           owner "root"
           group "root"
-          mode 0777
+          mode 0644
           variables({
             :master_app_server_host => master_app_server_host,
             :node_js_port => node_js_port
