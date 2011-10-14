@@ -61,8 +61,9 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         source "juggernaut.logrotate.erb"
         owner "root"
         group "root"
-        mode 0755
+        mode 0644
         variables({
+          :pid_file => pid_file,
           :log_file => log_file
         })  
       end

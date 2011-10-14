@@ -9,6 +9,6 @@
 	extension gz
   missingok
   postrotate
-  /bin/kill -USR1 `cat /var/run/mongodb/mongodb.pid`
+  /bin/kill -USR1 `cat <%= @pid_file %>`
   endscript
 }
