@@ -89,7 +89,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
 
   # mod haproxy.cfg to send node requests on port 80 to nodejs port
   # Find next line(s) that starts with server
-  # and retrieve the host 
+  # and retrieve the host
   # create a fragment from the template, with the host in it
   # insert the fragment right after the commented out server line
   
@@ -103,28 +103,27 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       haproxy = IO.read(filepath_haproxy)
       
       if !haproxy.match(/nodejs_server/)
+        Chef::Log.info "Yes, I need to process haproxy.cfg"
+        # first create the fragement I will need
+        # then read it into a variable to insert into the actual haproxy.cfg
+        Chef::Log.info "process haproxy.cfg with template #{filepath_haproxy_frag}"
+        Chef::Log.info "master_app_server_host: #{master_app_server_host}, node_js_port: #{node_js_port} "
+        template filepath_haproxy_frag do
+          source "haproxy.cfg.frag.erb"
+          owner "root"
+          group "root"
+          mode 0644
+          variables({
+            :master_app_server_host => master_app_server_host,
+            :node_js_port => node_js_port
+          })  
+        end
+        # now read it
+        Chef::Log.info "process haproxy.cfg Read frag"
+        haproxy_frag = IO.read(filepath_haproxy_frag)
+      
         ruby_block "insert the nodejs compliant front end into haproxy" do
           block do
-            Chef::Log.info "Yes, I need to process haproxy.cfg"
-            # first create the fragement I will need
-            # then read it into a variable to insert into the actual haproxy.cfg
-            Chef::Log.info "process haproxy.cfg with template #{filepath_haproxy_frag}"
-            Chef::Log.info "master_app_server_host: #{master_app_server_host}, node_js_port: #{node_js_port} "
-            template filepath_haproxy_frag do
-              source "haproxy.cfg.frag.erb"
-              owner "root"
-              group "root"
-              mode 0644
-              variables({
-                :master_app_server_host => master_app_server_host,
-                :node_js_port => node_js_port
-              })  
-            end
-            # now read it
-            Chef::Log.info "process haproxy.cfg Read frag"
-            haproxy_frag = IO.read(filepath_haproxy_frag)
-            
-            Chef::Log.info "Now write the change into the file"
             File.open(filepath_haproxy, "w") do |file|
               haproxy.split(/\n/).each do |line|
                 if line.match(/listen\s*cluster\s*:80/i)
@@ -138,19 +137,17 @@ if ['app','app_master','solo'].include?(node[:instance_role])
             end # end file
           end # block
           action :create
-          
-          execute "Delete the cfg frag" do
-            command "rm #{filepath_haproxy_frag}"
-          end  
-
-          execute "Restart haproxy" do
-            command %Q{
-              /etc/init.d/haproxy restart
-            }
-          end  
-          
         end # ruby_block
       
+        execute "Delete the cfg frag" do
+          command "rm #{filepath_haproxy_frag}"
+        end  
+      
+        execute "Restart haproxy" do
+          command %Q{
+            /etc/init.d/haproxy restart
+          }
+        end  
       end
   end
 
