@@ -11,7 +11,7 @@ PIDFILE=<%= @pid_file %>
 LOCAL_VAR_RUN=/var/run
 NAME=juggernaut
 DAEMON=/usr/local/bin/$NAME
-LOGFILE=/var/log/node-service.log
+LOGFILE=<%= @log_file %>
 NCMD="exec $DAEMON >>$LOGFILE 2>&1"
 
 #depend() {

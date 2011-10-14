@@ -14,6 +14,7 @@
 # => "ec2-50-18-101-127.us-west-1.compute.amazonaws.com"
 
 pid_file = '/var/run/juggernaut.pid'
+log_file = '/var/log/engineyard/juggernaut.log'
 chef_file = '/etc/chef/dna.json'
 chef_config = JSON.parse(File.read(chef_file))
 redis_host = chef_config['db_host']
@@ -37,12 +38,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
     command "npm install -g juggernaut"
     not_if { FileTest.exists?("#{install_dir}/juggernaut") }
   end
-
-  execute "start juggernaut daemon" do
-    command "/sbin/start-stop-daemon --start --background --exec #{install_dir}/juggernaut --chuid root:root"
-#    not_if { FileTest.exists?("#{install_dir}/juggernaut") }
-  end
-
+ 
 # install init.d
   case node[:instance_role]
     when "solo", "app_master"
@@ -56,9 +52,21 @@ if ['app','app_master','solo'].include?(node[:instance_role])
           :redis_host => redis_host,
           :redis_port => redis_port,
           :redis_user => redis_user,
-          :redis_pwd => redis_pwd
+          :redis_pwd => redis_pwd,
+          :log_file => log_file
         })  
       end
+
+      template "/etc/logrotate.d/juggernaut" do
+        source "juggernaut.logrotate.erb"
+        owner "root"
+        group "root"
+        mode 0755
+        variables({
+          :log_file => log_file
+        })  
+      end
+
   end
 
 
