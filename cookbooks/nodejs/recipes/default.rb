@@ -20,12 +20,6 @@ if ['solo','app_master'].include?(node[:instance_role])
     recursive true
   end
   
-  directory "/opt/node" do
-    recursive true
-    action :delete
-    if { FileTest.exists?("/usr/local/bin/node") }
-  end
-  
   # download nodejs 
   remote_file "/data/nodejs/#{nodejs_file}" do
     source "#{nodejs_url}"
@@ -35,10 +29,8 @@ if ['solo','app_master'].include?(node[:instance_role])
     backup 0
     not_if { FileTest.exists?("/data/nodejs/#{nodejs_file}") }
   end
+
   execute "unarchive nodejs" do
-    # remove the node EY installs
-    command "rm -R /opt/node"
-    
     command "cd /data/nodejs && tar zxf #{nodejs_file} && sync"
     not_if { FileTest.directory?("/data/nodejs/#{nodejs_dir}") }
   end
