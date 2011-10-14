@@ -42,21 +42,28 @@ if ['solo','app_master'].include?(node[:instance_role])
     command "cd /data/nodejs/#{nodejs_dir} && ./configure"
     not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
   end
+  
   execute "build nodejs" do
     command "cd /data/nodejs/#{nodejs_dir} && make"
     not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
+  end
+
+  execute "install nodejs" do
+    Chef::Log.info "run install"
+    command "cd /data/nodejs/#{nodejs_dir} && make install"
+    Chef::Log.info "Install has been run"
+    not_if { FileTest.exists?("/usr/local/bin/node") }
   end
 
   directory "/opt/node" do
     recursive true
     action :delete
   end
-
-  execute "install nodejs" do
-    command "cd /data/nodejs/#{nodejs_dir} && make install"
+  
+  execute "symlink nodejs" do
     # create a sym link to replace the old version
     command "ln -sfv /usr/local /opt/node"
-    not_if { FileTest.exists?("/usr/local/bin/node") }
+    not_if { FileTest.exists?("/opt/node/bin/node") }
   end
   
   # install npm
