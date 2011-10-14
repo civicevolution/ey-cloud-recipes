@@ -133,13 +133,13 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         action :create
       end # ruby_block
       
-      # Now restart haproxy
+      execute "Delete the cfg frag" do
+        command "rm #{filepath_haproxy_frag}"
+      end  
       
-      command "rm #{filepath_haproxy_frag}"
-      
-      execute "Restart nginx" do
+      execute "Restart haproxy" do
         command %Q{
-          /etc/init.d/nginx restart
+          /etc/init.d/haproxy restart
         }
       end  
       
