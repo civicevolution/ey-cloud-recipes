@@ -95,7 +95,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   
   case node[:instance_role]
     when "solo", "app_master"
-      log "process haproxy.cfg"
+      Chef::Log.info "process haproxy.cfg"
       filepath_haproxy_frag = "/etc/haproxy.frag.cfg"
       filepath_haproxy = "/etc/haproxy.cfg"
       
@@ -103,10 +103,10 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       haproxy = IO.read(filepath_haproxy)
       
       if !haproxy.match(/nodejs_server/)
-        log "Yes, I need to process haproxy.cfg"
+        Chef::Log.info "Yes, I need to process haproxy.cfg"
         # first create the fragement I will need
         # then read it into a variable to insert into the actual haproxy.cfg
-        log "process haproxy.cfg with template #{filepath_haproxy_frag}"
+        Chef::Log.info "process haproxy.cfg with template #{filepath_haproxy_frag}"
         template filepath_haproxy_frag do
           source "haproxy.cfg.frag.erb"
           owner "root"
@@ -118,7 +118,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
           })  
         end
         # now read it
-        log "process haproxy.cfg Read frag"
+        Chef::Log.info "process haproxy.cfg Read frag"
         haproxy_frag = IO.read(filepath_haproxy_frag)
       
         ruby_block "insert the nodejs compliant front end into haproxy" do
