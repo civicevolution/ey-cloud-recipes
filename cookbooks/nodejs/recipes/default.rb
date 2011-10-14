@@ -20,6 +20,12 @@ if ['solo','app_master'].include?(node[:instance_role])
     recursive true
   end
   
+  directory "/opt/node" do
+    recursive true
+    action :delete
+    if { FileTest.exists?("/usr/local/bin/node") }
+  end
+  
   # download nodejs 
   remote_file "/data/nodejs/#{nodejs_file}" do
     source "#{nodejs_url}"
@@ -49,15 +55,8 @@ if ['solo','app_master'].include?(node[:instance_role])
   end
 
   execute "install nodejs" do
-    Chef::Log.info "run install"
     command "cd /data/nodejs/#{nodejs_dir} && make install"
-    Chef::Log.info "Install has been run"
     not_if { FileTest.exists?("/usr/local/bin/node") }
-  end
-
-  directory "/opt/node" do
-    recursive true
-    action :delete
   end
   
   execute "symlink nodejs" do
