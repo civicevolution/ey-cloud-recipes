@@ -95,6 +95,9 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   
   case node[:instance_role]
     when "solo", "app_master"
+
+      filepath_haproxy_frag = "/etc/haproxy.frag.cfg"
+      filepath_haproxy = "/etc/haproxy.cfg"
       
       # Don't process haproxy.cfg if it already has backend nodejs_server
       haproxy = IO.read(filepath_haproxy)
@@ -102,8 +105,6 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       if !haproxy.match(/nodejs_server/)
         # first create the fragement I will need
         # then read it into a variable to insert into the actual haproxy.cfg
-        filepath_haproxy_frag = "/etc/haproxy.frag.cfg"
-        filepath_haproxy = "/etc/haproxy.cfg"
         template filepath_haproxy_frag do
           source "haproxy.cfg.frag.erb"
           owner "root"
