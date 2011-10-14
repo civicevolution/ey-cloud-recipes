@@ -104,7 +104,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         source "haproxy.cfg.frag.erb"
         owner "root"
         group "root"
-        mode 0744
+        mode 0777
         variables({
           :master_app_server_host => master_app_server_host,
           :node_js_port => node_js_port
@@ -112,7 +112,6 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       end
       # now read it
       haproxy_frag = IO.read(filepath_haproxy_frag)
-      File.delete(filepath_haproxy_frag)
       
       # now reads haproxy.cfg
       haproxy = IO.read(filepath_haproxy)
@@ -136,7 +135,13 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       
       # Now restart haproxy
       
+      command "rm #{filepath_haproxy_frag}"
       
+      execute "Restart nginx" do
+        command %Q{
+          /etc/init.d/nginx restart
+        }
+      end  
       
   end
 
