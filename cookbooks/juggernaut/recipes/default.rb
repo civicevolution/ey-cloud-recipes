@@ -104,7 +104,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
         source "haproxy.cfg.frag.erb"
         owner "root"
         group "root"
-        mode 0755
+        mode 0744
         variables({
           :master_app_server_host => master_app_server_host,
           :node_js_port => node_js_port
@@ -112,22 +112,27 @@ if ['app','app_master','solo'].include?(node[:instance_role])
       end
       # now read it
       haproxy_frag = IO.read(filepath_haproxy_frag)
-      #File.delete(filepath_haproxy_frag)
+      File.delete(filepath_haproxy_frag)
       
       # now reads haproxy.cfg
       haproxy = IO.read(filepath_haproxy)
       
-      File.open(filepath_haproxy, "w") do |file|
-        haproxy.lines.each do |line|
-          if line.match(/listen\s*cluster\s*:80/i)
-            file.puts "# #{line}"
-            file.puts "###################\n# Custom code inserted by Chef to route realtime to nodejs\n"
-            file.puts haproxy_frag
-          else
-            file.puts line
-          end
-        end
-      end # end file
+      ruby_block "remove default from nginx server.conf server_name and set default_server in listen directive" do
+        block do
+          File.open(filepath_haproxy, "w") do |file|
+            haproxy.split(/\n/).each do |line|
+              if line.match(/listen\s*cluster\s*:80/i)
+                file.puts "# #{line}"
+                file.puts "###################\n# Custom code inserted by Chef to route realtime to nodejs\n"
+                file.puts haproxy_frag
+              else
+                file.puts line
+              end
+            end
+          end # end file
+        end # block
+        action :create
+      end # ruby_block
       
       # Now restart haproxy
       

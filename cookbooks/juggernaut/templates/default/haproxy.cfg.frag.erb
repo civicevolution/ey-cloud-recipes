@@ -10,7 +10,7 @@ frontend public
 
 backend nodejs_server
 				mode http
-        server nodejs-0 <%= host %>:8080 check inter 5000 fastinter 1000 fall 1 weight 50
+        server nodejs-0 <%= @master_app_server_host %>:<%= @node_js_port %> check inter 5000 fastinter 1000 fall 1 weight 50
 
 backend webserver
         mode http
