@@ -142,16 +142,18 @@ if ['app','app_master','solo'].include?(node[:instance_role])
           end # block
           action :create
         end # ruby_block
+
+        execute "Restart haproxy" do
+          command %Q{
+            /etc/init.d/haproxy reload
+          }
+          only_if { FileTest.exists?(filepath_haproxy_frag) }
+        end  
       
         execute "Delete the cfg frag" do
           command "rm #{filepath_haproxy_frag}"
         end  
       
-        execute "Restart haproxy" do
-          command %Q{
-            /etc/init.d/haproxy restart
-          }
-        end  
       end
   end
 
