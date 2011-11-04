@@ -1,6 +1,7 @@
 frontend public
         bind :80
-        monitor-uri     /monitoruri
+        monitor-uri     /haproxy/monitor
+
 
         acl nodejs path_dir socket.io
         acl nodejs_init path /application.js /index.html
