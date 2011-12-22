@@ -6,7 +6,7 @@
 case node[:instance_role]
   when "solo", "app_master"
     node[:applications].each do |app_name,data|
-  
+
       template "/etc/monit.d/notify_d.#{app_name}.monitrc" do
         source "notify_d.monitrc.erb"
         owner "root"
@@ -26,6 +26,13 @@ end
 case node[:instance_role]
   when "solo", "app_master"
     node[:applications].each do |app_name,data|
+  
+      directory "/var/run/delayed_jobs/#{app_name}" do
+        recursive true
+        owner "root"
+        group "root"
+        mode 0755
+      end
   
       template "/etc/monit.d/delayed_job.#{app_name}.monitrc" do
         source "delayed_job.monitrc.erb"
