@@ -35,7 +35,8 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   end
 
   execute "npm install juggernaut" do
-    command "npm install -g juggernaut"
+    #command "npm install -g juggernaut"
+    command "npm install -g git+ssh://git@github.com:civicevolution/juggernaut.git"
     not_if { FileTest.exists?("#{install_dir}/juggernaut") }
   end
  
