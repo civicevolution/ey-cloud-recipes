@@ -4,10 +4,11 @@
 #
 
 if ['solo','app_master'].include?(node[:instance_role])
-
-  nodejs_file = "node-v0.4.12.tar.gz"
-  nodejs_dir = "node-v0.4.12"
-  nodejs_url = "http://nodejs.org/dist/#{nodejs_file}"
+  #http://nodejs.org/dist/v0.6.6/node-v0.6.6.tar.gz
+  nodejs_file = "node-v0.6.6.tar.gz"
+  nodejs_dist_dir = "v0.6.6"
+  nodejs_dir = "node-v0.6.6"
+  nodejs_url = "http://nodejs.org/dist/#{nodejs_dist_dir}/#{nodejs_file}"
   
   ey_cloud_report "nodejs" do
     message "configuring nodejs (#{nodejs_dir})"
@@ -33,6 +34,12 @@ if ['solo','app_master'].include?(node[:instance_role])
   execute "unarchive nodejs" do
     command "cd /data/nodejs && tar zxf #{nodejs_file} && sync"
     not_if { FileTest.directory?("/data/nodejs/#{nodejs_dir}") }
+  end
+  
+  # remove old  nodejs
+  execute "remove old nodejs" do
+    command "rm -f /usr/local/bin/node"
+    not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
   end
   
   # compile nodejs

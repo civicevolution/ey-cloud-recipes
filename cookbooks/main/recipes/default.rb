@@ -4,6 +4,7 @@
 #  }
 #end
 
+require_recipe "chmod_logs"
 require_recipe 'fix_nginx_server_names'
 require_recipe 'daemons'
 require_recipe 'nodejs'
