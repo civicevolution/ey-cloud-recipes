@@ -70,7 +70,12 @@ if ['app','app_master','solo'].include?(node[:instance_role])
 
   end
 
-
+  execute "symlink juggernaut" do
+    # create a sym link to juggernuat
+    command "ln -sfv /usr/bin/juggernaut /usr/local/bin"
+    not_if { FileTest.exists?("/usr/local/bin/juggernaut") }
+  end
+  
 
   # add to monit
   case node[:instance_role]
