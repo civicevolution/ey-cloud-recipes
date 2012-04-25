@@ -2,4 +2,4 @@ check process <%= @worker_name %>
   with pidfile /var/run/delayed_jobs/tp/delayed_job.pid
   start program = "/usr/bin/env RAILS_ENV=production /data/<%=@app_name %>/current/script/delayed_job --pid-dir=/var/run/delayed_jobs/tp --prefix tp start"
   stop program = "/usr/bin/env RAILS_ENV=production /data/<%=@app_name %>/current/script/delayed_job --pid-dir=/var/run/delayed_jobs/tp --prefix tp stop"
-	if totalmem is greater than 80 MB for 2 cycles then restart      # eating up memory?
+	if totalmem is greater than 200 MB for 2 cycles then restart      # eating up memory?
