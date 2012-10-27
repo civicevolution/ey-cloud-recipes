@@ -42,8 +42,7 @@ if ['solo','app_master'].include?(node[:instance_role])
   # hide old  nodejs
   execute "remove old nodejs" do
     command "mv /usr/bin/node /usr/bin/node-old-EY"
-    #not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") }
-    not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") && !FileTest.exists?("/usr/bin/node") }
+    not_if { FileTest.exists?("/usr/bin/node-old-EY") }
   end
   
   # compile nodejs
@@ -63,9 +62,8 @@ if ['solo','app_master'].include?(node[:instance_role])
   end
   
   #execute "symlink nodejs" do
-  #  # create a sym link to replace the old version
-  #  command "ln -sfv /usr/local /opt/node"
-  #  not_if { FileTest.exists?("/opt/node/bin/node") }
+    # create a sym link to replace the old version
+    command "ln -sf /usr/local/bin/node /usr/bin/node"
   #end
   
   # install npm
