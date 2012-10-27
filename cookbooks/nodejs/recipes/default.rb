@@ -61,10 +61,10 @@ if ['solo','app_master'].include?(node[:instance_role])
     not_if { FileTest.exists?("/usr/local/bin/node") }
   end
   
-  #execute "symlink nodejs" do
+  execute "symlink nodejs" do
     # create a sym link to replace the old version
     command "ln -sf /usr/local/bin/node /usr/bin/node"
-  #end
+  end
   
   # install npm
   ey_cloud_report "npm" do
