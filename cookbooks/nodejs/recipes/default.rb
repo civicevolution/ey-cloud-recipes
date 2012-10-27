@@ -5,16 +5,19 @@
 
 if ['solo','app_master'].include?(node[:instance_role])
   #http://nodejs.org/dist/v0.6.6/node-v0.6.6.tar.gz
-  nodejs_file = "node-v0.6.6.tar.gz"
-  nodejs_dist_dir = "v0.6.6"
-  nodejs_dir = "node-v0.6.6"
+  node_version = "v0.8.14"
+  nodejs_file = "node-#{node_version}.tar.gz"
+  nodejs_dist_dir = "#{node_version}"
+  nodejs_dir = "node-#{node_version}"
   nodejs_url = "http://nodejs.org/dist/#{nodejs_dist_dir}/#{nodejs_file}"
   
+  node_dir = "/opt/node"
+
   ey_cloud_report "nodejs" do
     message "configuring nodejs (#{nodejs_dir})"
   end
 
-  directory "/data/nodejs" do
+  directory "#{node_dir}" do
     owner 'root'
     group 'root'
     mode 0755
@@ -22,57 +25,58 @@ if ['solo','app_master'].include?(node[:instance_role])
   end
   
   # download nodejs 
-  remote_file "/data/nodejs/#{nodejs_file}" do
+  remote_file "#{node_dir}/#{nodejs_file}" do
     source "#{nodejs_url}"
     owner 'root'
     group 'root'
     mode 0644
     backup 0
-    not_if { FileTest.exists?("/data/nodejs/#{nodejs_file}") }
+    not_if { FileTest.exists?("#{node_dir}/#{nodejs_file}") }
   end
 
   execute "unarchive nodejs" do
-    command "cd /data/nodejs && tar zxf #{nodejs_file} && sync"
-    not_if { FileTest.directory?("/data/nodejs/#{nodejs_dir}") }
+    command "cd #{node_dir} && tar zxf #{nodejs_file} && sync"
+    not_if { FileTest.directory?("#{node_dir}/#{nodejs_dir}") }
   end
   
-  # remove old  nodejs
+  # hide old  nodejs
   execute "remove old nodejs" do
-    command "rm -f /usr/local/bin/node"
-    not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
+    command "mv /usr/bin/node /usr/bin/node-old-EY"
+    #not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") }
+    not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") && !FileTest.exists?("/usr/bin/node") }
   end
   
   # compile nodejs
   execute "configure nodejs" do
-    command "cd /data/nodejs/#{nodejs_dir} && ./configure"
-    not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
+    command "cd #{node_dir}/#{nodejs_dir} && ./configure"
+    not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") }
   end
   
   execute "build nodejs" do
-    command "cd /data/nodejs/#{nodejs_dir} && make"
-    not_if { FileTest.exists?("/data/nodejs/#{nodejs_dir}/node") }
+    command "cd #{node_dir}/#{nodejs_dir} && make"
+    not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") }
   end
 
   execute "install nodejs" do
-    command "cd /data/nodejs/#{nodejs_dir} && make install"
+    command "cd #{node_dir}/#{nodejs_dir} && make install"
     not_if { FileTest.exists?("/usr/local/bin/node") }
   end
   
-  execute "symlink nodejs" do
-    # create a sym link to replace the old version
-    command "ln -sfv /usr/local /opt/node"
-    not_if { FileTest.exists?("/opt/node/bin/node") }
-  end
+  #execute "symlink nodejs" do
+  #  # create a sym link to replace the old version
+  #  command "ln -sfv /usr/local /opt/node"
+  #  not_if { FileTest.exists?("/opt/node/bin/node") }
+  #end
   
   # install npm
   ey_cloud_report "npm" do
     message "configuring npm"
   end
 
-  # download npm
+  # download and install npm
   execute "download and install npm" do
     command "curl http://npmjs.org/install.sh | clean=no sh"
-    not_if { FileTest.exists?("/usr/local/bin/npm") }
+    not_if { FileTest.exists?("/usr/local/bin/npm") || FileTest.exists?("/usr/bin/npm") }
   end
 
 end

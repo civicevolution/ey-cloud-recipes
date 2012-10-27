@@ -8,7 +8,8 @@
 require_recipe 'fix_nginx_server_names'
 require_recipe 'daemons'
 #Do not override EY NodeJS install
-#require_recipe 'nodejs'
+require_recipe 'python'
+require_recipe 'nodejs'
 require_recipe 'juggernaut'
 
 # uncomment to turn on thinking sphinx/ultra sphinx. Remember to edit cookbooks/sphinx/recipes/default.rb first!
