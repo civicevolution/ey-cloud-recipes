@@ -10,33 +10,33 @@ if ['solo','app_master'].include?(node[:instance_role])
     message "installing wkhtmltopdf"
   end
 
-  execute "cd for wkhtmltopdf" do
-    command "cd #{wkhtmltopdf_dir}"
-    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf") }
-  end
-  
   # download wkhtmltopdf 
-  remote_file "wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2" do
+  remote_file "#{wkhtmltopdf_dir}/wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2" do
     source "http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2"
     owner 'root'
     group 'root'
     mode 0644
     backup 0
-    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf") }
+    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2") }
   end
 
-  execute "unzip wkhtmltopdf" do
-    command "bunzip2 wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2 && sync"
-    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf") }
+  execute "bkunzip wkhtmltopdf" do
+    command "cd #{wkhtmltopdf_dir} && bunzip2 wkhtmltopdf-0.10.0_rc2-static-amd64.tar.bz2 && sync"
+    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf-0.10.0_rc2-static-amd64.tar") }
   end
 
   execute "unarchive wkhtmltopdf" do
-    command "tar xvf wkhtmltopdf-0.10.0_rc2-static-amd64.tar && sync"
-    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf") }
+    command "cd #{wkhtmltopdf_dir} && tar xvf wkhtmltopdf-0.10.0_rc2-static-amd64.tar && sync"
+    not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf-amd64") }
   end
 
-  execute "cd for wkhtmltopdf" do
-    command "mv wkhtmltopdf-amd64 wkhtmltopdf"
+  execute "remove tar file for wkhtmltopdf" do
+    command "cd #{wkhtmltopdf_dir} && rm -f wkhtmltopdf-0.10.0_rc2-static-amd64.tar"
+    not_if { !FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf-0.10.0_rc2-static-amd64.tar") }
+  end
+
+  execute "move wkhtmltopdf" do
+    command "cd #{wkhtmltopdf_dir} && mv wkhtmltopdf-amd64 wkhtmltopdf"
     not_if { FileTest.exists?("#{wkhtmltopdf_dir}/wkhtmltopdf") }
   end
 
