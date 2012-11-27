@@ -11,6 +11,7 @@ require_recipe 'daemons'
 require_recipe 'python'
 require_recipe 'nodejs'
 require_recipe 'juggernaut'
+require_recipe 'wkhtmltopdf'
 
 # uncomment to turn on thinking sphinx/ultra sphinx. Remember to edit cookbooks/sphinx/recipes/default.rb first!
 # require_recipe "sphinx"
