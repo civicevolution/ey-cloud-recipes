@@ -35,7 +35,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   end
 
   execute "npm install juggernaut" do
-    command "npm install -g https://github.com/civicevolution/juggernaut/tarball/master"
+    command "npm install -g https://github.com/civicevolution/juggernaut/tarball/master --prefix=/opt/nodejs"
     not_if { FileTest.exists?("#{install_dir}/juggernaut") }
   end
  
@@ -72,7 +72,7 @@ if ['app','app_master','solo'].include?(node[:instance_role])
 
   execute "symlink juggernaut" do
     # create a sym link to juggernuat
-    command "ln -sfv /usr/bin/juggernaut /usr/local/bin"
+    command "ln -sfv /opt/nodejs/bin/juggernaut /usr/local/bin"
     not_if { FileTest.exists?("/usr/local/bin/juggernaut") }
   end
   
