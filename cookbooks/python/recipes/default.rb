@@ -59,10 +59,12 @@ if ['solo','app_master'].include?(node[:instance_role])
     not_if { FileTest.exists?("/opt/bin/python2.7") }
   end
   
-  execute "symlink python" do
-    # create a sym link to replace the old version
-    command "ln -sf /opt/bin/python2.7 /usr/bin/python"
-  end
+  # Do not override system python as it is needed by EY chef recipes
+  # In node use export PYTHON=`which /opt/bin/python2.7`
+  #execute "symlink python" do
+  #  # create a sym link to replace the old version
+  #  command "ln -sf /opt/bin/python2.7 /usr/bin/python"
+  #end
   
 
 end

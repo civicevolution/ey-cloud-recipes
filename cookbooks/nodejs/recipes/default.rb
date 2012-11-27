@@ -47,7 +47,7 @@ if ['solo','app_master'].include?(node[:instance_role])
   
   # compile nodejs
   execute "configure nodejs" do
-    command "cd #{node_dir}/#{nodejs_dir} && ./configure"
+    command "export PYTHON=`which /opt/bin/python2.7` && cd #{node_dir}/#{nodejs_dir} && ./configure"
     not_if { FileTest.exists?("#{node_dir}/#{nodejs_dir}/node") }
   end
   
