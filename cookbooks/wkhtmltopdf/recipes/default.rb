@@ -4,7 +4,7 @@
 #
       
 if ['solo','app_master'].include?(node[:instance_role])
-  wkhtmltopdf_dir = "/opt/bin"
+  wkhtmltopdf_dir = "/usr/local/bin"
 
   ey_cloud_report "wkhtmltopdf" do
     message "installing wkhtmltopdf"
