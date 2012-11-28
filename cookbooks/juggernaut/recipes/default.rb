@@ -38,38 +38,45 @@ if ['app','app_master','solo'].include?(node[:instance_role])
     command "npm install -g https://github.com/civicevolution/juggernaut/tarball/master --prefix=/opt/nodejs"
     not_if { FileTest.exists?("#{install_dir}/juggernaut") }
   end
- 
-# install init.d
-  case node[:instance_role]
-    when "solo", "app_master"
-      template "/etc/init.d/juggernaut" do
-        source "juggernaut.init.d.erb"
-        owner "root"
-        group "root"
-        mode 0755
-        variables({
-          :pid_file => pid_file,
-          :redis_host => redis_host,
-          :redis_port => redis_port,
-          :redis_user => redis_user,
-          :redis_pwd => redis_pwd,
-          :log_file => log_file
-        })  
-      end
 
-      template "/etc/logrotate.d/juggernaut" do
-        source "juggernaut.logrotate.erb"
-        owner "root"
-        group "root"
-        mode 0644
-        variables({
-          :pid_file => pid_file,
-          :log_file => log_file
-        })  
-      end
-
+  execute "create init.d juggernaut" do
+    case node[:instance_role]
+      when "solo", "app_master"
+        template "/etc/init.d/juggernaut" do
+          source "juggernaut.init.d.erb"
+          owner "root"
+          group "root"
+          mode 0755
+          variables({
+            :pid_file => pid_file,
+            :redis_host => redis_host,
+            :redis_port => redis_port,
+            :redis_user => redis_user,
+            :redis_pwd => redis_pwd,
+            :log_file => log_file
+          })  
+        end
+    end
+    not_if { FileTest.exists?("/etc/init.d/juggernaut") }
   end
 
+  execute "create logrotate juggernaut" do
+    case node[:instance_role]
+      when "solo", "app_master"
+        template "/etc/logrotate.d/juggernaut" do
+          source "juggernaut.logrotate.erb"
+          owner "root"
+          group "root"
+          mode 0644
+          variables({
+            :pid_file => pid_file,
+            :log_file => log_file
+          })  
+        end
+    end
+    not_if { FileTest.exists?("/etc/logrotate.d/juggernaut") }
+  end
+  
   execute "symlink juggernaut" do
     # create a sym link to juggernuat
     command "ln -sfv /opt/nodejs/bin/juggernaut /usr/local/bin"
@@ -77,18 +84,20 @@ if ['app','app_master','solo'].include?(node[:instance_role])
   end
   
 
-  # add to monit
-  case node[:instance_role]
-    when "solo", "app_master"
-      template "/etc/monit.d/juggernaut.monitrc" do
-        source "juggernaut.monitrc.erb"
-        owner "root"
-        group "root"
-        mode 0644
-        variables({
-          :pid_file => pid_file
-        })
-      end
+  execute "create monit for juggernaut" do
+    case node[:instance_role]
+      when "solo", "app_master"
+        template "/etc/monit.d/juggernaut.monitrc" do
+          source "juggernaut.monitrc.erb"
+          owner "root"
+          group "root"
+          mode 0644
+          variables({
+            :pid_file => pid_file
+          })
+        end
+    end
+    not_if { FileTest.exists?("/etc/monit.d/juggernaut.monitrc") }
   end
   
   # this restart also affects daemons (monitrc for notify and delayed_job)
